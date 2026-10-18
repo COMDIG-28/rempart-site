@@ -388,5 +388,34 @@ form{grid-template-columns:1fr;padding:18px}.field.full{grid-column:auto}
     window.open("https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
   });
 </script>
-</body>
+<script>
+(function(){
+  var grid=document.querySelector(".portfolio-grid");if(!grid)return;
+  var S={logo:"Identité visuelle / logo",social:"Visuels pour réseaux sociaux",video:"Vidéo et montage",marque:"Communication de marque",affiche:"Design graphique"};
+  fetch("https://api.github.com/repos/COMDIG-28/rempart-site/contents/assets/portfolio")
+  .then(function(r){return r.ok?r.json():[]})
+  .then(function(files){
+    files=files.filter(function(f){return /\.(jpe?g|png|webp|gif)$/i.test(f.name)});
+    if(!files.length)return;
+    grid.innerHTML="";
+    files.forEach(function(f){
+      var base=f.name.replace(/\.[^.]+$/,""),parts=base.split("--"),
+          key=parts.length>1?parts.shift().toLowerCase():"",
+          title=parts.join(" ").replace(/[-_]+/g," ").trim();
+      title=title.charAt(0).toUpperCase()+title.slice(1);
+      var service=S[key]||"Design graphique";
+      var a=document.createElement("article");
+      a.className="portfolio-card reveal is-visible";a.dataset.service=service;
+      a.innerHTML='<div class="portfolio-art"><img loading="lazy" alt=""><div class="ov"><b></b><a href="#commande">Commander un visuel similaire ↗</a></div></div><p><strong></strong><br></p>';
+      a.querySelector("img").src="assets/portfolio/"+encodeURIComponent(f.name);
+      a.querySelector("img").alt=title;
+      a.querySelector(".ov b").textContent=title;
+      a.querySelector("p strong").textContent=title;
+      a.querySelector("p").appendChild(document.createTextNode(service));
+      a.querySelector(".ov a").addEventListener("click",function(){document.getElementById("service").value=service;});
+      grid.appendChild(a);
+    });
+  }).catch(function(){});
+})();
+</script></body>
 </html>
